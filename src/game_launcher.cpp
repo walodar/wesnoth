@@ -19,6 +19,7 @@
 #include "commandline_options.hpp"      // for commandline_options
 #include "config.hpp"                   // for config, etc
 #include "cursor.hpp"                   // for set, CURSOR_TYPE::NORMAL
+#include "desktop/discord_rich_presence.hpp"
 #include "exceptions.hpp"               // for error
 #include "filesystem.hpp"               // for get_user_config_dir, etc
 #include "game_classification.hpp"      // for game_classification, etc
@@ -119,7 +120,8 @@ game_launcher::game_launcher(const commandline_options& cmdline_opts, const char
 	jump_to_multiplayer_(false),
 	jump_to_campaign_(false, -1, "", ""),
 	jump_to_editor_(false),
-	load_data_()
+	load_data_(),
+	rp_manager_(new desktop::rich_presence_manager())
 {
 	bool no_music = false;
 	bool no_sound = false;

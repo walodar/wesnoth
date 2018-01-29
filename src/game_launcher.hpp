@@ -29,6 +29,7 @@
 class commandline_options;
 class config;
 class CVideo;
+namespace desktop { class rich_presence_manager; }
 namespace savegame { struct load_game_metadata; }
 struct jump_to_campaign_info
 {
@@ -128,4 +129,5 @@ private:
 
 	bool jump_to_editor_;
 	std::unique_ptr<savegame::load_game_metadata> load_data_;
+	std::unique_ptr<desktop::rich_presence_manager> rp_manager_;
 };

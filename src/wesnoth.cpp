@@ -17,6 +17,7 @@
 #include "commandline_options.hpp" // for commandline_options, etc
 #include "config.hpp"              // for config, config::error, etc
 #include "cursor.hpp"              // for set, CURSOR_TYPE::NORMAL, etc
+#include "desktop/discord_rich_presence.hpp"
 #include "editor/editor_main.hpp"
 #include "filesystem.hpp" // for filesystem::file_exists, filesystem::io_exception, etc
 #include "floating_label.hpp"
@@ -746,6 +747,11 @@ static int do_gameloop(const std::vector<std::string>& args)
 	plugins.set_callback("exit", [](const config& cfg) { safe_exit(cfg["code"].to_int(0)); }, false);
 
 	for(;;) {
+		desktop::discord_presence presence;
+		presence.state = "In Menu";
+
+		presence.send();
+
 		// reset the TC, since a game can modify it, and it may be used
 		// by images in add-ons or campaigns dialogs
 		image::set_team_colors();

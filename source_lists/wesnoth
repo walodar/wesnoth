@@ -66,6 +66,7 @@ commandline_options.cpp
 config_cache.cpp
 controller_base.cpp
 countdown_clock.cpp
+desktop/discord_rich_presence.cpp
 desktop/notifications.cpp
 desktop/open.cpp
 desktop/paths.cpp

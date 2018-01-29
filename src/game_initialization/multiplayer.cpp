@@ -15,6 +15,7 @@
 #include "game_initialization/multiplayer.hpp"
 
 #include "addon/manager.hpp" // for installed_addons
+#include "desktop/discord_rich_presence.hpp"
 #include "events.hpp"
 #include "formula/string_utils.hpp"
 #include "game_config_manager.hpp"
@@ -448,9 +449,18 @@ void enter_staging_mode(mp_workflow_helper_ptr helper)
 		campaign_info->is_host = true;
 	}
 
+	std::string name = "";
 	bool dlg_ok = false;
 	{
 		ng::connect_engine_ptr connect_engine(new ng::connect_engine(helper->state, true, campaign_info.get()));
+
+		name = connect_engine->scenario()["name"].str();
+
+		desktop::discord_presence presence;
+		presence.state = "Waiting for Players";
+		presence.details = name;
+
+		presence.send();
 
 		gui2::dialogs::mp_staging dlg(*connect_engine, *helper->lobby_info, helper->connection);
 		dlg.show();
@@ -458,6 +468,12 @@ void enter_staging_mode(mp_workflow_helper_ptr helper)
 	} // end connect_engine_ptr, dlg scope
 
 	if(dlg_ok) {
+		desktop::discord_presence presence;
+		presence.state = "In Game";
+		presence.details = name;
+
+		presence.send();
+
 		campaign_controller controller(helper->state, helper->game_config, game_config_manager::get()->terrain_types());
 		controller.set_mp_info(campaign_info.get());
 		controller.play_game();
@@ -501,6 +517,12 @@ bool enter_lobby_mode(mp_workflow_helper_ptr helper, const std::vector<std::stri
 
 	// We use a loop here to allow returning to the lobby if you, say, cancel game creation.
 	while(true) {
+		desktop::discord_presence presence;
+		presence.state = "In Lobby";
+		presence.details = "Looking for Game";
+
+		presence.send();
+
 		if(const config& cfg = helper->game_config.child("lobby_music")) {
 			for(const config& i : cfg.child_range("music")) {
 				sound::play_music_config(i);
@@ -577,7 +599,7 @@ bool enter_lobby_mode(mp_workflow_helper_ptr helper, const std::vector<std::stri
 /** Pubic entry points for the MP workflow */
 namespace mp
 {
-void start_client(const config& game_config,	saved_game& state, const std::string& host)
+void start_client(const config& game_config, saved_game& state, const std::string& host)
 {
 	const config* game_config_ptr = &game_config;
 

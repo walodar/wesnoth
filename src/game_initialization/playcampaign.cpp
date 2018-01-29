@@ -21,6 +21,7 @@
 #include "game_initialization/playcampaign.hpp"
 
 #include "carryover.hpp"
+#include "desktop/discord_rich_presence.hpp"
 #include "game_config.hpp"
 #include "game_errors.hpp"
 #include "preferences/game.hpp"
@@ -262,6 +263,13 @@ LEVEL_RESULT campaign_controller::play_game()
 
 	while(state_.valid())
 	{
+		desktop::discord_presence presence;
+		presence.state = "In Game";
+		presence.details = state_.get_starting_pos()["name"];
+		presence.large_image_text = state_.classification().campaign_name;
+
+		presence.send();
+
 		LEVEL_RESULT res = LEVEL_RESULT::VICTORY;
 		end_level_data end_level;
 		try {

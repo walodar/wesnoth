@@ -1558,6 +1558,9 @@
     <ClCompile Include="..\..\src\gui\dialogs\multiplayer\player_list_helper.cpp">
       <Filter>Gui\Dialogs\Multiplayer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\desktop\discord_rich_presence.cpp">
+      <Filter>Desktop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\addon\client.hpp">
@@ -3024,6 +3027,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\gui\dialogs\multiplayer\player_list_helper.hpp">
       <Filter>Gui\Dialogs\Multiplayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\desktop\discord_rich_presence.hpp">
+      <Filter>Desktop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

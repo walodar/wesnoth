@@ -18,6 +18,17 @@
 
 namespace desktop
 {
+/**
+ * Manager class to initialize and shut down the Discord Rich Presence app.
+ *
+ * Do note that this "app" isn't anything we deploy. Discord runs it (I don't
+ * know where exactly) and it handles the game-specific processing of rich
+ * presence data, such as associating images to their given IDs.
+ *
+ * The manager won't actually do anything if Discord isn't running concurrently
+ * with Wesnoth, since the Discord RPC API leverages the Discord client for
+ * its magic.
+ */
 class rich_presence_manager
 {
 public:
@@ -26,7 +37,14 @@ public:
 };
 
 /**
+ * C++ version of DiscordRichPresence.
  *
+ * Since that's a C struct, it means extra initialization work (memset) and
+ * extra variable management to ensure the const char* members don't go out
+ * -of-scope before they're accessed.
+ *
+ * Every member of DiscordRichPresence is available here, and I've copied
+ * the size restrictions listed in the Discord RPC header.
  */
 struct discord_presence
 {

@@ -28,6 +28,15 @@ namespace
 const char* DISCORD_APP_ID = "407478227485982720";
 const char* STEAM_APP_ID = "599390";
 
+//
+// NOTE: These callbacks aren't actually executed unless Discord_RunCallbacks
+// is called, since the Discord RPC API is threaded. Right now I don't exactly
+// have a logical place to call it, nor do I know how logging is affected by
+// threading. Will figure it out.
+//
+// -- vultraz, 2018-02-02
+//
+
 void callback_ready()
 {
 	LOG_DU << "Discord Rich Presence ready\n";

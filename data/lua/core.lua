@@ -394,6 +394,31 @@ if wesnoth.kernel_type() == "Game Lua Kernel" then
 			wml.array_access.set(key, value)
 		end
 	})
+
+	wesnoth.persistent_tags = {}
+	
+	-- Note: We don't save the old on_load and on_save here.
+	-- It's not necessary because we know this will be the first one registered.
+	function wesnoth.game_events.on_load(cfg)
+		for i = 1, #cfg do
+			local tag = wesnoth.persistent_tags[cfg[i][1]]
+			if type(tag) == 'table' and type(tag.read) == 'function' then
+				tag.read(cfg)
+			end
+		end
+	end
+
+	function wesnoth.game_events.on_save()
+		local data_to_save = {}
+		for name, tag in pairs(wesnoth.persistent_tags) do
+			if type(tag) == 'table' and type(tag.write) == 'function' then
+				local function add(data)
+					table.insert(data_to_save, wml.tag[name](data))
+				end
+				tag.write(add)
+			end
+		end
+	end
 end
 
 -- Some C++ functions are deprecated; apply the messages here.

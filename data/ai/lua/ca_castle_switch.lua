@@ -30,19 +30,24 @@ function ca_castle_switch:evaluation(cfg, data, filter_own)
     local start_time, ca_name = wesnoth.get_time_stamp() / 1000., 'castle_switch'
     if AH.print_eval() then AH.print_ts('     - Evaluating castle_switch CA:') end
 
-    if ai.aspects.passive_leader then
-        -- Turn off this CA if the leader is passive
-        return 0
-    end
-
-    local leader = wesnoth.units.find_on_map {
+    local leaders = wesnoth.units.find_on_map {
             side = wesnoth.current.side,
             canrecruit = 'yes',
             formula = '(movement_left = total_movement) and (hitpoints = max_hitpoints)',
             { "and", filter_own }
-        }[1]
+        }
+
+    local leader
+    for _,l in pairs(leaders) do
+        if (not AH.is_passive_leader(ai.aspects.passive_leader, l.id)) then
+            leader = l
+            break
+        end
+    end
+
     if not leader then
         -- CA is irrelevant if no leader or the leader may have moved from another CA
+        data.leader = nil
         data.leader_target = nil
         if AH.print_eval() then AH.done_eval_messages(start_time, ca_name) end
         return 0
@@ -157,6 +162,7 @@ function ca_castle_switch:evaluation(cfg, data, filter_own)
         end
 
         data.leader_target = next_hop
+        data.leader = leader
 
         -- if we're on a keep, wait until there are no movable units on the castle before moving off
         CS_leader_score = 195000
@@ -191,16 +197,11 @@ function ca_castle_switch:evaluation(cfg, data, filter_own)
 end
 
 function ca_castle_switch:execution(cfg, data, filter_own)
-    local leader = wesnoth.units.find_on_map {
-        side = wesnoth.current.side,
-        canrecruit = 'yes',
-        { "and", filter_own }
-    }[1]
-
     if AH.print_exec() then AH.print_ts('   Executing castle_switch CA') end
-    if AH.show_messages() then wesnoth.wml_actions.message { speaker = leader.id, message = 'Switching castles' } end
+    if AH.show_messages() then wesnoth.wml_actions.message { speaker = data.leader.id, message = 'Switching castles' } end
 
-    AH.checked_move(ai, leader, data.leader_target[1], data.leader_target[2])
+    AH.checked_move(ai, data.leader, data.leader_target[1], data.leader_target[2])
+    data.leader = nil
     data.leader_target = nil
 end
 
